@@ -6,11 +6,11 @@ This script will automatically control a rotor (both azimuth and elevation) base
 
 1. Download the script
 2. Install these dependencies:
-..*hamlib2 (`sudo apt-get install libhamlib2 libhamlib-utils`)
-..*Math::Round (`cpan install Math::Round`)
-..*Ham::APRS::FAP (`cpan install Ham::APRS::FAP`)
+..* hamlib2 (`sudo apt-get install libhamlib2 libhamlib-utils`)
+..* Math::Round (`cpan install Math::Round`)
+..* Ham::APRS::FAP (`cpan install Ham::APRS::FAP`)
 3. Change the variables in the top of the script
-..*APRS-IS users will need to enter their callsign and password. The password is a hash of the callsign; google it. 
+..* APRS-IS users will need to enter their callsign and password. The password is a hash of the callsign; google it. 
 
 ## Usage
 
