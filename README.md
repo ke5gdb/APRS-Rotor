@@ -1,12 +1,18 @@
 ## About
 
-This script will automatically control a rotor (both azimuth and elevation) based on data obtained from APRS packets (locally, or APRS-IS).
+This script will automatically control a rotor (both azimuth and elevation) based on data obtained from APRS packets (locally via TNC, or APRS-IS).
+
+## Installation
+
+1. Download the script
+2. Install these dependencies:
+..*hamlib2 (`sudo apt-get install libhamlib2 libhamlib-utils`)
+..*Math::Round (`cpan install Math::Round`)
+..*Ham::APRS::FAP (`cpan install Ham::APRS::FAP`)
+3. Change the variables in the top of the script
+..*APRS-IS users will need to enter their callsign and password. The password is a hash of the callsign; google it. 
 
 ## Usage
-
-This documentation is still a work in progress.
-
-The gist of it is that you need to change the variables at the top of the file, setup hamlib, and run rotctld.
 
 At K5UTD, our setup looks like this:
 
