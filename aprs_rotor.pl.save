@@ -15,7 +15,7 @@ use IO::Socket::INET;
 # Rotor configuration
 my $rotorIP = "192.168.10.203";		# IP address of rotor [127.0.0.1] (rotctld)
 my $rotorPort = 4533;			# Port of rotor [4533]
-my $rateLimit = 0;			# Rate limit rotor updates [30]
+my $rateLimit = 30;			# Rate limit rotor updates [30]
 
 # Groundstation Configuration
 my $mylat = 32.9869;	 		# Latitude of rotor in Decimal Degrees
@@ -24,9 +24,9 @@ my $myelev = 235;			# Elevation of rotor, AMSL in meters
 my $balloonPrimary = "KE5GDB-11";	# Callsign of balloon
 my $balloonSecondary = "KE5GDB-3";	# Secondary balloon callsign
 
-# APRS-IS Settings
-my $aprsCall = "";
-my $aprsPass = "";
+# APRS-IS Config
+my $aprsCall = KE5GDB;
+my $aprsPass = 18850;
 
 # Attempt to connect to rotor
 my $socket = new IO::Socket::INET (
@@ -36,30 +36,25 @@ my $socket = new IO::Socket::INET (
 );
 
 die "Cannot connect to rotor! $!\n" unless $socket;
-print "Connected to rotor!\n";
+print "Connected to rotor!";
 
-## <UNCOMMENT THESE LINES FOR APRX LOGFILE> ##
-#$file=File::Tail->new("/var/log/aprx/aprx-rf.log");
-#while (defined($line=$file->read)) {
+## UNCOMMENT THESE LINES FOR APRX LOGFILE ##
+
+# Read the logfile
+$file=File::Tail->new("/var/log/aprx/aprx-rf.log");
+while (defined($line=$file->read)) {
+
 ## </UNCOMMENT> ##
 
-## <UNCOMMENT THESE LINES FOR APRS-IS USAGE (SEE END OF SCRIPT TOO)> ##
-my $is = new Ham::APRS::IS('rotate.aprs.net:14580', $aprsCall, 'passcode' => $aprsPass, 'appid' => 'KE5GDB APRS Rotor Controller', filter => "b/$balloonPrimary/$balloonSecondary");
+## UNCOMMENT THESE LINES FOR APRS-IS USAGE ##
+my $is = new Ham::APRS::IS('rotate.aprs.net:14580', $aprsCall, 'passcode' => $aprsPass, 'appid' => 'KE5GDB APRS Rotor Controller', filter => 'r/33.2/-97.1/50');
 $is->connect('retryuntil' => 3) || die "Failed to connect: $is->{error}";
-print "Connected to APRS-IS servers!\n";
-while(1) {
-	my $packet = $is->getline_noncomment();
-	next if (!defined $packet);
-	$packet = $packet . "\n";
-## </UNCOMMENT> ##
+
 
 	# Cut it down to just the packet
-	if(!defined $packet) {
-		my $packet = substr $line, 36;
-	}
+	my $packet = substr $line, 36;
+	#my $packet = "KE5GDB-11>APRX28:!3321.80N/09713.40WO000/000/A=156000\n";
 	my %packetdata;
-
-	# Parse the packet
 	my $retval = parseaprs($packet, \%packetdata);
 
 	if ($retval == 1) {
@@ -70,11 +65,10 @@ while(1) {
 
 		# Skip if updated too soon (rate limited)
 		$time = time();
-		my $deltaTime = $time - $oldtime;
-		if($deltaTime < $rateLimit) {
+		if(($time - $oldtime) < $rateLimit) {
 			next;
 		}
-		$oldtime = $time;
+		$oldtime = $time
 
 #		while (my ($key, $value) = each(%packetdata)) {
 #			print "$key: $value\n";
@@ -125,13 +119,9 @@ while(1) {
 
 		my $response = "";
 		$socket->recv($response, 1024);
-		print "\tSent data to rotor (size: $size): $command";
+		print "\tSent data to rotor (size: $size)\n";
 		print "\tReceived: $response\n\n";
 	}
 }
 
 $socket->close();
-
-## UNCOMMENT FOR APRS-IS ##
-$is->disconnect() || die "Failed to disconnect: $is->{error}";
-## </UNCOMMENT> ##
