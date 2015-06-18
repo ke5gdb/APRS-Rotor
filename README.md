@@ -6,18 +6,20 @@ This script will automatically control a rotor (both azimuth and elevation) base
 
 1. Download the script
 2. Install these dependencies:
-..* hamlib2 (`sudo apt-get install libhamlib2 libhamlib-utils`)
-..* Math::Round (`cpan install Math::Round`)
-..* Ham::APRS::FAP (`cpan install Ham::APRS::FAP`)
+  * hamlib2 (`sudo apt-get install libhamlib2 libhamlib-utils`)
+  * Math::Round (`cpan install Math::Round`)
+  * Ham::APRS::FAP (`cpan install Ham::APRS::FAP`)
+  * Screen (`sudo apt-get install screen`)
 3. Change the variables in the top of the script
-..* APRS-IS users will need to enter their callsign and password. The password is a hash of the callsign; google it. 
+  * APRS-IS users will need to enter their callsign and password. The password is a hash of the callsign; google it. 
 
 ## Usage
 
-At K5UTD, our setup looks like this:
+Run `rotctl -l` to list all of the available rotors. At K5UTD, we are running a Kenpro G-5400, and the homebrew interface board uses the Yaesu GS-232B protocol, so our model number is 603.
 
-```rotctld -m 603 -r /dev/ttyUSB0```
+I recommend running both of these commands in screen sessions so you can disconnect and come back later, but two terminals will also get the job done.
 
-You can run `rotctl -l` to list all rotors and their respective numbers.
-
-## I really don't like writing the docs
+```
+rotctld -m 603 -r /dev/ttyACM0
+./aprs_rotor.pl
+```
